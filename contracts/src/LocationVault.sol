@@ -2,17 +2,31 @@
 pragma solidity 0.8.24;
 
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {Groth16Verifier} from "./ZkContract.sol";
 
 contract LocationVault is ReentrancyGuard {
     error LocationVault__StakedValueInsufficient();
     error LocationVault__InsufficientBalance();
     error LocationVault__NotZkContract();
+    error LocationVault__ProofVerificationFailed();
+    error LocationVault__NotAuthority();
+    error LocationVault__VisaPeriodOngoing();
+    error LocationVault__WithdrawDateExpired();
+    error LocationVault__AuthorityCannotWithdrawYet();
+
 
     event Staked(address staker, uint256 amount);
 
     // modifier withinLocationAndTimePeriod() {
     //     _;
     // }
+
+    modifier onlyAuthority() {
+        if (msg.sender != authority) {
+            revert LocationVault__NotAuthority();
+        }
+        _;
+    }
 
     modifier onlyZkContract() {
         if (msg.sender != zkContract) {
@@ -21,10 +35,29 @@ contract LocationVault is ReentrancyGuard {
         _;
     }
 
+    modifier verifyProof(
+        uint256[2] calldata _pA,
+        uint256[2][2] calldata _pB,
+        uint256[2] calldata _pC,
+        uint256[1] calldata _pubSignals
+    ) {
+        if (!Groth16Verifier(zkContract).verifyProof(_pA, _pB, _pC, _pubSignals)) {
+            revert LocationVault__ProofVerificationFailed();
+        }
+        _;
+    }
+
+    struct ImmigrantData {
+        uint256 visaPeriod;
+        uint256 amount;
+        uint256 creationTimestamp;
+    }
+
     address public zkContract;
+    address public authority;
     bool public locked;
     uint256 public amount;
-    mapping(address immigrant => uint256 amount) balances;
+    mapping(address immigrant => ImmigrantData data) immigrantData;
 
     constructor(uint256 _amount, address _zkContract) {
         amount = _amount;
@@ -32,21 +65,47 @@ contract LocationVault is ReentrancyGuard {
         zkContract = _zkContract;
     }
 
-    function stake() public payable {
-        if (msg.value >= amount) {
+    function stake(uint256 _period, uint256 _amount) public payable {
+        if (msg.value < _amount) {
             revert LocationVault__StakedValueInsufficient();
         } else {
-            balances[msg.sender] += amount;
+            immigrantData[msg.sender].amount = amount;
+            immigrantData[msg.sender].visaPeriod = _period;
+            immigrantData[msg.sender].creationTimestamp = block.timestamp;
             emit Staked(msg.sender, amount);
         }
     }
 
-    function withdraw(uint256 _amount) public nonReentrant {
-        if (balances[msg.sender] < _amount) {
+    function withdrawByImmigrant(
+        uint256[2] calldata _pA,
+        uint256[2][2] calldata _pB,
+        uint256[2] calldata _pC,
+        uint256[1] calldata _pubSignals
+    ) public nonReentrant verifyProof(_pA, _pB, _pC, _pubSignals) {
+        if (immigrantData[msg.sender].amount <= 0) {
             revert LocationVault__InsufficientBalance();
-        } else {
-            (bool result,) = msg.sender.call{value: _amount}("");
-            require(result, "Transfer Failed");
+        }  
+        //verify timestampsss
+        if (block.timestamp - immigrantData[msg.sender].creationTimestamp < immigrantData[msg.sender].visaPeriod) {
+            revert LocationVault__VisaPeriodOngoing();
         }
+        if (block.timestamp - immigrantData[msg.sender].creationTimestamp >= immigrantData[msg.sender].visaPeriod + 5 days) {
+            revert LocationVault__WithdrawDateExpired();
+        }
+        immigrantData[msg.sender].amount = 0;
+        (bool result,) = msg.sender.call{value: immigrantData[msg.sender].amount}("");
+        require(result, "Transfer Failed");
+    }
+
+    function withdrawByAuthority() public nonReentrant onlyAuthority {
+        if (immigrantData[msg.sender].amount <= 0) {
+            revert LocationVault__InsufficientBalance();
+        }  
+        if (block.timestamp - immigrantData[msg.sender].creationTimestamp <= immigrantData[msg.sender].visaPeriod + 5 days) {
+            revert LocationVault__AuthorityCannotWithdrawYet();
+        }
+        immigrantData[msg.sender].amount = 0;
+        (bool result,) = msg.sender.call{value: immigrantData[msg.sender].amount}("");
+        require(result, "Transfer Failed");
     }
 }
