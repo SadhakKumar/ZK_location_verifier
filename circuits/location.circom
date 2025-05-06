@@ -11,11 +11,11 @@ template LocationInIndia() {
     signal output inIndia;
 
     // Scale inputs (e.g., 28.6139 -> 286139)
-    signal lat_scaled;
-    signal lon_scaled;
+    signal lat_scaled <== latitude;
+    signal lon_scaled <== longitude;
 
-    lat_scaled <== latitude * 10000;
-    lon_scaled <== longitude * 10000;
+    // lat_scaled <== latitude * 10000;
+    // lon_scaled <== longitude * 10000;
 
     // Bounds for India (scaled ×10000)
     var LAT_MIN = 65000;
