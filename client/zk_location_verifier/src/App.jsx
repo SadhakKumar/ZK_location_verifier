@@ -20,6 +20,7 @@ function App() {
     );
     console.log("proof: ", proof);
     console.log("publicSignals: ", publicSignals);
+    console.log("random test");
     setLoading(false);
   };
 
