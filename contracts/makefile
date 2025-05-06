@@ -3,6 +3,8 @@
 .PHONY: all test clean deploy fund help install snapshot format anvil 
 
 DEFAULT_ANVIL_KEY := 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+# BASE_RPC_URL := "https://mainnet.base.org"
+# BASE_SEPOLIA_RPC_URL := "https://sepolia.base.org"
 
 deploySepolia:
 		@forge script DeployRaffle --rpc-url $(SEPOLIA_RPC_URL) --private-key $(PRIVATE_KEY) --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvvv
@@ -38,6 +40,8 @@ anvil :; anvil -m 'test test test test test test test test test test test junk' 
 
 NETWORK_ARGS := --rpc-url http://localhost:8545 --private-key $(DEFAULT_ANVIL_KEY) --broadcast
 
+NETWORK_ARGS_BASE := --rpc-url $(BASE_SEPOLIA_RPC_URL) --account deployer --broadcast --verify --etherscan-api-key BAEBQPS59UMDXSF9HEKERTW1TTJGP1GWN9 -vvvv
+
 ifeq ($(findstring --network sepolia,$(ARGS)),--network sepolia)
 	NETWORK_ARGS := --rpc-url $(SEPOLIA_RPC_URL) --private-key $(PRIVATE_KEY) --broadcast --verify --etherscan-api-key Y6CDIEBAJ1UH3G3RQ4TF1KKF7SPQEIBSCX -vvvv
 endif
@@ -48,6 +52,8 @@ endif
 deploy: 
 	@forge script script/LocationVaultScript.s.sol:LocationVaultScript $(NETWORK_ARGS)
 
+deployBase: 
+	@forge script script/LocationVaultScript.s.sol:LocationVaultScript $(NETWORK_ARGS_BASE)
 # simulatePerformUpkeep: 
 # 	@forge script script/DeployRaffle.s.sol:DeployRaffle --sig "simulatePerformUpkeep(address)"  $(NETWORK_ARGS)
 
