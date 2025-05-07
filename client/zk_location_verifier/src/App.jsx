@@ -12,11 +12,11 @@ function App() {
     setLoading(true);
     const { proof, publicSignals } = await groth16.fullProve(
       {
-        latitude: "376001", // scaled (19.0000)
-        longitude: "972501", // scaled (72.0000)
+        latitude: "35", // scaled (19.0000)
+        longitude: "69", // scaled (72.0000)
       },
-      "/circuits/location.wasm",
-      "/circuits/location_0001.zkey"
+      "/circuits/locationV2.wasm",
+      "/circuits/locationV2_0001.zkey"
     );
     console.log("proof: ", proof);
     console.log("publicSignals: ", publicSignals);
