@@ -1,13 +1,20 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 import { groth16 } from "snarkjs";
 import { Wallet } from "@coinbase/onchainkit/wallet";
+import { useContract } from "./context/Providers";
 
 function App() {
   const [loading, setLoading] = useState(false);
+  const contract = useContract();
 
+  const getSomething = async () => {
+    const network = await contract.runner.provider.getNetwork();
+    console.log("Connected to network:", network);
+    console.log(contract);
+    const result = await contract.amount();
+    console.log(result);
+  };
   const sendLocation = async () => {
     setLoading(true);
     const { proof, publicSignals } = await groth16.fullProve(
@@ -28,6 +35,7 @@ function App() {
     <>
       <Wallet />
       <button onClick={sendLocation}>click</button>
+      <button onClick={getSomething}>click</button>
     </>
   );
 }
