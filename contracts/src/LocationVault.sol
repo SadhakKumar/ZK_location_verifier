@@ -38,10 +38,9 @@ contract LocationVault is ReentrancyGuard {
     modifier verifyProof(
         uint256[2] calldata _pA,
         uint256[2][2] calldata _pB,
-        uint256[2] calldata _pC,
-        uint256[1] calldata _pubSignals
+        uint256[2] calldata _pC
     ) {
-        if (!Groth16Verifier(zkContract).verifyProof(_pA, _pB, _pC, _pubSignals)) {
+        if (!Groth16Verifier(zkContract).verifyProof(_pA, _pB, _pC)) {
             revert LocationVault__ProofVerificationFailed();
         }
         _;
@@ -79,9 +78,8 @@ contract LocationVault is ReentrancyGuard {
     function withdrawByImmigrant(
         uint256[2] calldata _pA,
         uint256[2][2] calldata _pB,
-        uint256[2] calldata _pC,
-        uint256[1] calldata _pubSignals
-    ) public nonReentrant verifyProof(_pA, _pB, _pC, _pubSignals) {
+        uint256[2] calldata _pC
+    ) public nonReentrant verifyProof(_pA, _pB, _pC) {
         if (immigrantData[msg.sender].amount <= 0) {
             revert LocationVault__InsufficientBalance();
         }  
