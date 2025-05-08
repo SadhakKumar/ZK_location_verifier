@@ -66,7 +66,7 @@ ZK-Visa ensures that:
    ```
 2. **Cd into directory**
    ```bash
-      cd zk-visa/client/zk_location_verifier
+   cd zk-visa/client/zk_location_verifier
    ```
 3. **Run npm run dev**
    ```bash
