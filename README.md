@@ -63,5 +63,7 @@ ZK-Visa ensures that:
 1. **Clone the repo**  
    ```bash
    git clone https://github.com/your-org/zk-visa.git
-   cd zk-visa
+   cd zk-visa/client/zk_location_verifier
+   npm run dev
   ```
+
