@@ -72,4 +72,3 @@ ZK-Visa ensures that:
    ```bash
    npm run dev
    ```
-   hello
