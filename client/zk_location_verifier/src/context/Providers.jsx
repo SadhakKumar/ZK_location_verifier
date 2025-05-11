@@ -22,8 +22,8 @@ export function Providers(props) {
         const provider = new BrowserProvider(window.ethereum); // ✅ Ethers v6
         const signer = await provider.getSigner();
         const contractInstance = new Contract(
-          import.meta.env.VITE_PUBLIC_VAULT_CONTRACT_ADDRESS,
-          // "0x5609e6226067d4c425a81CcB9Fd5e1A028ae5ac1",
+          // import.meta.env.VITE_PUBLIC_VAULT_CONTRACT_ADDRESS,
+          "0x5609e6226067d4c425a81CcB9Fd5e1A028ae5ac1",
           LocationVault.abi,
           signer
         );

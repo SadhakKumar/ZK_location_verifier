@@ -11,12 +11,14 @@
   },
   "dependencies": {
     "@coinbase/onchainkit": "^0.38.10",
-    "@tailwindcss/vite": "^4.1.5",
+    "@tailwindcss/vite": "^4.1.6",
     "ethers": "^6.14.0",
+    "framer-motion": "^12.10.5",
+    "lucide-react": "^0.509.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "snarkjs": "^0.7.5",
-    "tailwindcss": "^4.1.5"
+    "tailwindcss": "^4.1.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
