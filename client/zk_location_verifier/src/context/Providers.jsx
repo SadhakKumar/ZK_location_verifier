@@ -23,7 +23,8 @@ export function Providers(props) {
         const signer = await provider.getSigner();
         const contractInstance = new Contract(
           // import.meta.env.VITE_PUBLIC_VAULT_CONTRACT_ADDRESS,
-          "0x5609e6226067d4c425a81CcB9Fd5e1A028ae5ac1",
+          // "0x5609e6226067d4c425a81CcB9Fd5e1A028ae5ac1",
+          "0xfD5169D415a2eD89C2836785734e2dAF36B9225b",
           LocationVault.abi,
           signer
         );
