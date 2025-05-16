@@ -55,11 +55,9 @@ contract LocationVault is ReentrancyGuard {
     address public zkContract;
     address public authority;
     bool public locked;
-    uint256 public amount;
     mapping(address immigrant => ImmigrantData data) immigrantData;
 
-    constructor(uint256 _amount, address _zkContract) {
-        amount = _amount;
+    constructor(address _zkContract) {
         locked = false;
         zkContract = _zkContract;
     }
@@ -68,10 +66,10 @@ contract LocationVault is ReentrancyGuard {
         if (msg.value < _amount) {
             revert LocationVault__StakedValueInsufficient();
         } else {
-            immigrantData[msg.sender].amount = amount;
+            immigrantData[msg.sender].amount = _amount;
             immigrantData[msg.sender].visaPeriod = _period;
             immigrantData[msg.sender].creationTimestamp = block.timestamp;
-            emit Staked(msg.sender, amount);
+            emit Staked(msg.sender, _amount);
         }
     }
 
