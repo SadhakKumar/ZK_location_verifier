@@ -90,9 +90,15 @@ contract LocationVault is ReentrancyGuard {
         if (block.timestamp - immigrantData[msg.sender].creationTimestamp >= immigrantData[msg.sender].visaPeriod + 5 days) {
             revert LocationVault__WithdrawDateExpired();
         }
+
+        uint256 amountToWithdraw = immigrantData[msg.sender].amount;
         immigrantData[msg.sender].amount = 0;
-        (bool result,) = msg.sender.call{value: immigrantData[msg.sender].amount}("");
+        (bool result,) = payable(msg.sender).call{value: amountToWithdraw}("");
         require(result, "Transfer Failed");
+    }
+
+    function setAuthority(address _authority) public {
+        authority = _authority;
     }
 
     function withdrawByAuthority() public nonReentrant onlyAuthority {
@@ -102,8 +108,9 @@ contract LocationVault is ReentrancyGuard {
         if (block.timestamp - immigrantData[msg.sender].creationTimestamp <= immigrantData[msg.sender].visaPeriod + 5 days) {
             revert LocationVault__AuthorityCannotWithdrawYet();
         }
+        uint256 amountToWithdraw = immigrantData[msg.sender].amount;
         immigrantData[msg.sender].amount = 0;
-        (bool result,) = msg.sender.call{value: immigrantData[msg.sender].amount}("");
+        (bool result,) = payable(msg.sender).call{value: amountToWithdraw}("");
         require(result, "Transfer Failed");
     }
 }
