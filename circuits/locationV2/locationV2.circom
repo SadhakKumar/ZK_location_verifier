@@ -7,6 +7,8 @@ template LocationV2() {
   signal input latitude;
   signal input longitude;
 
+  signal output is_outside;
+
   signal more_than_left_longitude;
   signal less_than_right_longitude;
   signal more_than_bottom_latitude;
@@ -22,10 +24,18 @@ template LocationV2() {
   less_than_right_longitude <== LessThan(252)([longitude, right_longitude]);
   more_than_left_longitude <== GreaterThan(252)([longitude, left_longitude]);
 
-  less_than_top_latitude === 1;
-  more_than_bottom_latitude === 1;
-  less_than_right_longitude === 1;
-  more_than_left_longitude === 1;
+  // Check if inside
+  signal step1;
+  signal step2;
+  signal is_inside;
+
+  step1 <== less_than_top_latitude * more_than_bottom_latitude;
+  step2 <== less_than_right_longitude * more_than_left_longitude;
+  is_inside <== step1 * step2;
+
+  // Final output: true if OUTSIDE
+  is_outside <== 1 - is_inside;
+
 
 }
 
