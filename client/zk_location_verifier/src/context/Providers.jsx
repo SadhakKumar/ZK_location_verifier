@@ -24,7 +24,7 @@ export function Providers(props) {
         const contractInstance = new Contract(
           // import.meta.env.VITE_PUBLIC_VAULT_CONTRACT_ADDRESS,
           // "0x5609e6226067d4c425a81CcB9Fd5e1A028ae5ac1",
-          "0xfD5169D415a2eD89C2836785734e2dAF36B9225b",
+          "0x8D4F370BcfAB03fb41791bd6F4D87C3C04023Ede",
           LocationVault.abi,
           signer
         );
